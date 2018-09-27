@@ -61,7 +61,7 @@ $resp = $chall -> getWidgetHtml();
 if($resp === false){
     // Error happened. Check if servers are not down.
 }else{
-	    echo $resp; // Draw HTML snippet
+    echo $resp; // Draw HTML snippet
 }
 ```
 
@@ -85,6 +85,6 @@ $widgetUrl = $chall -> getWidgetUrl();
 if($widgetUrl === false){
     // Error happened. Check if servers are not down.
 }else{
-	    echo $widgetUrl; // Return widget URL
+    echo $widgetUrl; // Return widget URL
 }
 ```
