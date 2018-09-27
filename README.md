@@ -25,7 +25,6 @@ if($resp === false){
 This code prepares a call to Challenger to delete particular client {client_id}:
 
 ```php
-<?php
 include 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
@@ -36,7 +35,6 @@ $resp = $chall -> deleteClient();
 if($resp === false){
     // Error happened. Check is servers are not down.
 }
-?>
 ```
 
 # Performance widgets
