@@ -20,6 +20,8 @@ if($resp === false){
 }
 ```
 
+N.B. If ownerId is used, clientId is one way hashed internally to increase protection of personal client data.
+
 ## Delete client example
 
 This code prepares a call to Challenger to delete particular client {client_id}:
@@ -36,6 +38,8 @@ if($resp === false){
     // Error happened. Check is servers are not down.
 }
 ```
+
+N.B. This function is accessible for in-house deployments only.
 
 # Performance widgets
 ## Web version
@@ -63,6 +67,8 @@ if($resp === false){
 }
 ```
 
+N.B. This function is accessible for in-house deployments only.
+
 ## Mobile app version
 
 This code creates an encrypted URL for mobile ready widget. It should be passed to mobile app and opened in WebView.
@@ -86,3 +92,5 @@ if($widgetUrl === false){
     echo $widgetUrl; // Return widget URL
 }
 ```
+
+N.B. This function is accessible for in-house deployments only.
