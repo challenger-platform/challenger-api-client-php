@@ -54,26 +54,32 @@ class Challenger{
 		return $encrypted.':'.base64_encode($iv);
 	}
 
-	public function getEventTrackingUrl($event){
-		$data = json_encode(array(
-			'client_id' => $this -> clientId,
+	private function getEventTrackingUrl($event){
+		// Owner call's should always be hashed be default. Owner Id is a salt itself
+		if($this -> ownerId){
+			$clientId = md5($this -> ownerId . ":" . $this -> clientId);
+		}else{
+			$clientId = $this -> clientId;
+		}
+
+		$data = array(
+			'client_id' => $clientId,
 			'params' => $this -> params,
 			'event' => $event,
-		));
+		);
 
-		$encryptedData = $this -> encryptData($data);
+		$encryptedData = $this -> encryptData(json_encode($data));
 
 		return ($this -> port == '443' ? 'https' : 'http') . '://' . $this -> host . '/api/v1/trackEvent?owner_id='.$this -> ownerId.'&data=' . urlencode($encryptedData);
 	}
 
 	public function trackEvent($event){
-
 		$url = $this -> getEventTrackingUrl($event);
 
 		return file_get_contents($url);
 	}
 
-	public function getClientDeletionUrl(){
+	private function getClientDeletionUrl(){
 		$data = json_encode(array(
 			'client_id' => $this -> clientId,
 		));
@@ -84,14 +90,12 @@ class Challenger{
 	}
 
 	public function deleteClient(){
-
 		$url = $this -> getClientDeletionUrl();
 
 		return file_get_contents($url);
 	}
 
-
-	public function getEncryptedData(){
+	private function getEncryptedWidgetData(){
 		$data = json_encode(array(
 			'client_id' => $this -> clientId,
 			'params' => $this -> params,
@@ -108,7 +112,7 @@ class Challenger{
 			var _chw = _chw || {};
 			_chw.type = "iframe";
 			_chw.domain = "'.$this -> host.'";
-			_chw.data = "'.$this -> getEncryptedData().'";
+			_chw.data = "'.$this -> getEncryptedWidgetData().'";
 			(function() {
 			var ch = document.createElement("script"); ch.type = "text/javascript"; ch.async = true;
 			ch.src = ("https:" == document.location.protocol ? "https://" : "http://") + "'.($this -> host).'/v1/widget/script.js";
@@ -121,6 +125,6 @@ class Challenger{
 	}
 
 	public function getWidgetUrl(){
-		return '//' . $this -> host . '/widget?data=' . urlencode($this -> getEncryptedData());
+		return '//' . $this -> host . '/widget?data=' . urlencode($this -> getEncryptedWidgetData());
 	}
 }
