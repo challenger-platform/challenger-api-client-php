@@ -35,7 +35,7 @@ $chall -> setClientId({client_id});
 $resp = $chall -> deleteClient();
 
 if($resp === false){
-    // Error happened. Check is servers are not down.
+    // Error happened. Check if servers are not down.
 }
 ```
 
