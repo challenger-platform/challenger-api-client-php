@@ -6,16 +6,15 @@ Challenger platform API class and examples for PHP
 This code prepares a call to Challenger server on event happened to a client identified by {client_id}:
 
 ```php
-include 'challenger.client.php';
+include_once 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
 $chall -> setKey('{secret_key}');
 $chall -> setOwnerId({owner_id}); // Optional
 $chall -> setClientId({client_id});
 $chall -> addParam('multiple', '{multiple}'); // Optional
-$resp = $chall -> trackEvent({event_id});
 
-if($resp === false){
+if($chall -> trackEvent({event_id}) === false){
     // Error happened. Check is servers are not down.
 }
 ```
@@ -27,15 +26,15 @@ N.B. If ownerId is used, clientId is one way hashed internally to increase prote
 This code prepares a call to Challenger to delete particular client {client_id}:
 
 ```php
-include 'challenger.client.php';
+include_once 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
 $chall -> setKey('{secret_key}');
 $chall -> setClientId({client_id});
 $resp = $chall -> deleteClient();
 
-if($resp === false){
-    // Error happened. Check if servers are not down.
+if($chall -> trackEvent({event_id}) === false){
+    // Error happened. Check is servers are not down.
 }
 ```
 
@@ -47,7 +46,7 @@ N.B. This function is accessible for in-house deployments only.
 Using the PHP helper functions provided with Challenger to get widget HTML is as easy as that:
 
 ```php
-include 'challenger.client.php';
+include_once 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
 $chall -> setClientId({client_id});
@@ -74,7 +73,7 @@ N.B. This function is accessible for in-house deployments only.
 This code creates an encrypted URL for mobile ready widget. It should be passed to mobile app and opened in WebView.
 
 ```php
-include 'challenger.client.php';
+include_once 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
 $chall -> setClientId({client_id});
