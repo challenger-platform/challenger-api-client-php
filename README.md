@@ -15,7 +15,7 @@ $chall -> setClientId({client_id});
 $chall -> addParam('multiple', '{multiple}'); // Optional
 
 if($chall -> trackEvent({event_id}) === false){
-    // Error happened. Check is servers are not down.
+    // Error happened. Check if servers are not down.
 }
 ```
 
@@ -34,7 +34,7 @@ $chall -> setClientId({client_id});
 $resp = $chall -> deleteClient();
 
 if($chall -> trackEvent({event_id}) === false){
-    // Error happened. Check is servers are not down.
+    // Error happened. Check if servers are not down.
 }
 ```
 
