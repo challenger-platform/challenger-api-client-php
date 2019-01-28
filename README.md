@@ -1,6 +1,15 @@
 Challenger platform API class and examples for PHP
 ===
 
+In example below:
+
+ - `your.challenger.domain` - is the domain of your Challenger implementation
+ - `secret_key` - a unique key provided by Challenger to encrypt data exchange
+ - `owner_id` - a unique identifier provided by Challenger (optional)
+ - `client_id` - the identifier of the client performing action
+ - `event_id` - the identifier of the corresponding event in Challenger platform.
+ - `multiple` - for quantifiable challenges (ex. get 1 point for every 1 euro spent). Provide value to multiple points with.
+
 ## Event tracking example
 
 This code prepares a call to Challenger server on event happened to a client identified by {client_id}:
