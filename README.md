@@ -50,6 +50,20 @@ if($chall -> trackEvent({event_id}) === false){
 N.B. This function is accessible for in-house deployments only.
 
 # Performance widgets
+
+In examples below:
+ - `your.challenger.domain` - is the domain of your Challenger implementation.
+ - `client_id` - the identifier of the client performing action
+ - `secret_key` - a unique key provided by Challenger to encrypt data exchange
+ - `param1`, `param2`, ... - optional parameters to pass to the widget (For example name of the client). List of parameters Challenger can map:
+   - `expiration` (in format 0000-00-00 00:00:00) - required param
+   - `name`
+   - `surname`
+   - `email`
+   - `phone`
+   - `birthday` (in format 0000-00-00)
+ - `value1`, `value2`,  ... - values of optional parameters.
+
 ## Web version
 
 Using the PHP helper functions provided with Challenger to get widget HTML is as easy as that:
