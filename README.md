@@ -1,22 +1,30 @@
 Challenger platform API class and examples for PHP
 ===
 
+In example below:
+
+ - `your.challenger.domain` - is the domain of your Challenger implementation
+ - `secret_key` - a unique key provided by Challenger to encrypt data exchange
+ - `owner_id` - a unique identifier provided by Challenger (optional)
+ - `client_id` - the identifier of the client performing action
+ - `event_id` - the identifier of the corresponding event in Challenger platform.
+ - `multiple` - for quantifiable challenges (ex. get 1 point for every 1 euro spent). Provide value to multiple points with.
+
 ## Event tracking example
 
 This code prepares a call to Challenger server on event happened to a client identified by {client_id}:
 
 ```php
-include 'challenger.client.php';
+include_once 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
 $chall -> setKey('{secret_key}');
 $chall -> setOwnerId({owner_id}); // Optional
 $chall -> setClientId({client_id});
 $chall -> addParam('multiple', '{multiple}'); // Optional
-$resp = $chall -> trackEvent({event_id});
 
-if($resp === false){
-    // Error happened. Check is servers are not down.
+if($chall -> trackEvent({event_id}) === false){
+    // Error happened. Check if servers are not down.
 }
 ```
 
@@ -27,27 +35,41 @@ N.B. If ownerId is used, clientId is one way hashed internally to increase prote
 This code prepares a call to Challenger to delete particular client {client_id}:
 
 ```php
-include 'challenger.client.php';
+include_once 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
 $chall -> setKey('{secret_key}');
 $chall -> setClientId({client_id});
 $resp = $chall -> deleteClient();
 
-if($resp === false){
-    // Error happened. Check is servers are not down.
+if($chall -> trackEvent({event_id}) === false){
+    // Error happened. Check if servers are not down.
 }
 ```
 
 N.B. This function is accessible for in-house deployments only.
 
 # Performance widgets
+
+In examples below:
+ - `your.challenger.domain` - is the domain of your Challenger implementation.
+ - `client_id` - the identifier of the client performing action
+ - `secret_key` - a unique key provided by Challenger to encrypt data exchange
+ - `param1`, `param2`, ... - optional parameters to pass to the widget (For example name of the client). List of parameters Challenger can map:
+   - `expiration` (in format 0000-00-00 00:00:00) - required param
+   - `name`
+   - `surname`
+   - `email`
+   - `phone`
+   - `birthday` (in format 0000-00-00)
+ - `value1`, `value2`,  ... - values of optional parameters.
+
 ## Web version
 
 Using the PHP helper functions provided with Challenger to get widget HTML is as easy as that:
 
 ```php
-include 'challenger.client.php';
+include_once 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
 $chall -> setClientId({client_id});
@@ -74,7 +96,7 @@ N.B. This function is accessible for in-house deployments only.
 This code creates an encrypted URL for mobile ready widget. It should be passed to mobile app and opened in WebView.
 
 ```php
-include 'challenger.client.php';
+include_once 'challenger.client.php';
 
 $chall = new Challenger('{your.challenger.domain}');
 $chall -> setClientId({client_id});
