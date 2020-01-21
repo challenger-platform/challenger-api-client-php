@@ -104,20 +104,26 @@ class Challenger{
 		return $this -> encryptData($data);
 	}
 
+	public function getWidgetScript(){
+		return '
+			_chw = _chw || {};
+			_chw.type = "iframe";
+			_chw.domain = "'.$this -> host.'";
+			_chw.data = "'.$this -> getEncryptedData().'";
+			(function() {
+			var ch = document.createElement("script"); ch.type = "text/javascript"; ch.async = true;
+			ch.src = "//'.($this -> host).'/v1/widget/script.js";
+			var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ch, s);
+			})();
+		';
+	}
+
 	public function getWidgetHtml(){
 		$out = '
 		<div id="_chWidget"></div>
 		<script type="text/javascript">
 			<!--
-			var _chw = _chw || {};
-			_chw.type = "iframe";
-			_chw.domain = "'.$this -> host.'";
-			_chw.data = "'.$this -> getEncryptedWidgetData().'";
-			(function() {
-			var ch = document.createElement("script"); ch.type = "text/javascript"; ch.async = true;
-			ch.src = ("https:" == document.location.protocol ? "https://" : "http://") + "'.($this -> host).'/v1/widget/script.js";
-			var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ch, s);
-			})();
+			'.$this -> getWidgetScript().'
 			//-->
 		</script>';
 
