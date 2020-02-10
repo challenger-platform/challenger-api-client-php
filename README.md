@@ -5,7 +5,7 @@ In example below:
 
  - `your.challenger.domain` - is the domain of your Challenger implementation
  - `secret_key` - a unique key provided by Challenger to encrypt data exchange
- - `owner_id` - a unique identifier provided by Challenger (optional)
+ - `owner_id` - a unique identifier provided by Challenger. Normally used to identify coalition partners. (optional)
  - `client_id` - the identifier of the client performing action
  - `event_id` - the identifier of the corresponding event in Challenger platform.
  - `multiple` - for quantifiable challenges (ex. get 1 point for every 1 euro spent). Provide value to multiple points with.
@@ -47,7 +47,7 @@ if($chall -> trackEvent({event_id}) === false){
 }
 ```
 
-N.B. This function is accessible for in-house deployments only.
+N.B. This function is not accessible for coalitional partners.
 
 # Performance widgets
 
@@ -89,7 +89,7 @@ if($resp === false){
 }
 ```
 
-N.B. This function is accessible for in-house deployments only.
+N.B. This function is not accessible for coalitional partners.
 
 ## Mobile app version
 
@@ -115,4 +115,4 @@ if($widgetUrl === false){
 }
 ```
 
-N.B. This function is accessible for in-house deployments only.
+N.B. This function is not accessible for coalitional partners.
