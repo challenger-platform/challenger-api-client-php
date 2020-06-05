@@ -106,7 +106,7 @@ class Challenger{
 
 	public function getWidgetScript(){
 		return '
-			_chw = _chw || {};
+			_chw = typeof _chw == "undefined" ? {} : _chw;
 			_chw.type = "iframe";
 			_chw.domain = "'.$this -> host.'";
 			_chw.data = "'.$this -> getEncryptedData().'";
