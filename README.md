@@ -3,7 +3,7 @@ Challenger platform API class and examples for PHP
 
 In example below:
 
- - `your.challenger.domain` - is the domain of your Challenger implementation
+ - `your.challenger.domain` - is the domain of your Challenger implementation (alternatively could be provided as URL)
  - `secret_key` - a unique key provided by Challenger to encrypt data exchange
  - `owner_id` - a unique identifier provided by Challenger. Normally used to identify coalition partners. (optional)
  - `client_id` - the identifier of the client performing action
@@ -52,7 +52,7 @@ N.B. This function is not accessible for coalitional partners.
 # Performance widgets
 
 In examples below:
- - `your.challenger.domain` - is the domain of your Challenger implementation.
+ - `your.challenger.domain` - is the domain of your Challenger implementation (alternatively could be provided as URL).
  - `client_id` - the identifier of the client performing action
  - `secret_key` - a unique key provided by Challenger to encrypt data exchange
  - `param1`, `param2`, ... - optional parameters to pass to the widget (For example name of the client). List of parameters Challenger can map:

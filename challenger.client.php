@@ -3,16 +3,18 @@
 class Challenger{
 	var $host = null;
 	var $port = 443;
-	var $params = array();
+	var $params = [];
 	var $key = null;
 	var $ownerId = 0;
 	var $clientId = 0;
 
 	public function __construct($host, $port = false){
-		$this -> host = $host;
-		if($port){
-			$this -> port = $port;
-		}
+		$url = parse_url($host); // Check if URL is provided instead of hostname
+		
+		$this -> host = $url['host'] ?? $host;
+		$this -> port = $url['port'] ??
+			$port ??
+			((!empty($url['scheme']) and $url['scheme'] == 'http') ? 80 : $this -> port);
 	}
 
 	private function generateVector(){
@@ -41,7 +43,8 @@ class Challenger{
 		$this -> params[$name] = $value;
 	}
 
-	private function encryptData($data = array()){
+	private function encryptData($data = []){
+
 		// Generate an initialization vector
 		// This *MUST* be available for decryption as well
 		$iv = $this -> generateVector();
@@ -49,9 +52,7 @@ class Challenger{
 		// Encrypt $data using aes-256-cbc cipher with the given encryption key and
 		// our initialization vector. The 0 gives us the default options, but can
 		// be changed to OPENSSL_RAW_DATA or OPENSSL_ZERO_PADDING
-		$encrypted = openssl_encrypt($data, 'aes-256-cbc', $this -> key, 0, $iv);
-
-		return $encrypted.':'.base64_encode($iv);
+		return openssl_encrypt($data, 'aes-256-cbc', $this -> key, 0, $iv) . ':' . base64_encode($iv);
 	}
 
 	private function getEventTrackingUrl($event){
@@ -62,46 +63,36 @@ class Challenger{
 			$clientId = $this -> clientId;
 		}
 
-		$data = array(
+		$encryptedData = $this -> encryptData(json_encode([
 			'client_id' => $clientId,
 			'params' => $this -> params,
 			'event' => $event,
-		);
-
-		$encryptedData = $this -> encryptData(json_encode($data));
+		]));
 
 		return ($this -> port == '443' ? 'https' : 'http') . '://' . $this -> host . '/api/v1/trackEvent?owner_id='.$this -> ownerId.'&data=' . urlencode($encryptedData);
 	}
 
 	public function trackEvent($event){
-		$url = $this -> getEventTrackingUrl($event);
-
-		return file_get_contents($url);
+		return file_get_contents($this -> getEventTrackingUrl($event));
 	}
 
 	private function getClientDeletionUrl(){
-		$data = json_encode(array(
+		$encryptedData = $this -> encryptData(json_encode([
 			'client_id' => $this -> clientId,
-		));
-
-		$encryptedData = $this -> encryptData($data);
+		]));
 
 		return ($this -> port == '443' ? 'https' : 'http') . '://' . $this -> host . '/api/v1/deleteClient?data=' . urlencode($encryptedData);
 	}
 
 	public function deleteClient(){
-		$url = $this -> getClientDeletionUrl();
-
-		return file_get_contents($url);
+		return file_get_contents($this -> getClientDeletionUrl());
 	}
 
 	private function getEncryptedWidgetData(){
-		$data = json_encode(array(
+		return $this -> encryptData(json_encode([
 			'client_id' => $this -> clientId,
 			'params' => $this -> params,
-		));
-
-		return $this -> encryptData($data);
+		]));
 	}
 
 	public function getWidgetScript(){
@@ -109,7 +100,7 @@ class Challenger{
 			_chw = typeof _chw == "undefined" ? {} : _chw;
 			_chw.type = "iframe";
 			_chw.domain = "'.$this -> host.'";
-			_chw.data = "'.$this -> getEncryptedData().'";
+			_chw.data = "'.$this -> getEncryptedWidgetData().'";
 			(function() {
 			var ch = document.createElement("script"); ch.type = "text/javascript"; ch.async = true;
 			ch.src = "//'.($this -> host).'/v1/widget/script.js";
@@ -119,15 +110,13 @@ class Challenger{
 	}
 
 	public function getWidgetHtml(){
-		$out = '
+		return '
 		<div id="_chWidget"></div>
 		<script type="text/javascript">
 			<!--
 			'.$this -> getWidgetScript().'
 			//-->
 		</script>';
-
-		return $out;
 	}
 
 	public function getWidgetUrl(){
