@@ -88,8 +88,11 @@ if($resp === false){
     echo $resp; // Draw HTML snippet
 }
 
-// For locally drawn widgets `getEncryptedData()` method could be used instead of `getWidgetHtml()`
-$user_data = $chall -> getEncryptedData();
+// ...
+
+// For locally drawn widgets `getEncryptedData()` method could be used instead of `getWidgetHtml()`. Please refer:
+// https://github.com/challenger-platform/challenger-widget#get-apiwidgetauthenticateuser for more information
+$encrypted_data = $chall -> getEncryptedData();
 
 ```
 
@@ -117,6 +120,12 @@ if($widgetUrl === false){
 }else{
     echo $widgetUrl; // Return widget URL
 }
+
+// ...
+
+// For locally drawn widgets `getEncryptedData()` method could be used instead of `getWidgetHtml()`. Please refer:
+// https://github.com/challenger-platform/challenger-widget#get-apiwidgetauthenticateuser for more information
+$encrypted_data = $chall -> getEncryptedData();
 ```
 
 N.B. This function is not accessible for coalitional partners.
