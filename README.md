@@ -87,6 +87,10 @@ if($resp === false){
 }else{
     echo $resp; // Draw HTML snippet
 }
+
+// For locally drawn widgets `getEncryptedData()` method could be used instead of `getWidgetHtml()`
+$user_data = $chall -> getEncryptedData();
+
 ```
 
 N.B. This function is not accessible for coalitional partners.
