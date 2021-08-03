@@ -10,7 +10,7 @@ class Challenger{
 
 	public function __construct($host, $port = false){
 		$url = parse_url($host); // Check if URL is provided instead of hostname
-		
+
 		$this -> host = $url['host'] ?? $host;
 		$this -> port = $url['port'] ??
 			$port ??
@@ -88,7 +88,7 @@ class Challenger{
 		return file_get_contents($this -> getClientDeletionUrl());
 	}
 
-	private function getEncryptedWidgetData(){
+	public function getEncryptedData(){
 		return $this -> encryptData(json_encode([
 			'client_id' => $this -> clientId,
 			'params' => $this -> params,
@@ -100,7 +100,7 @@ class Challenger{
 			_chw = typeof _chw == "undefined" ? {} : _chw;
 			_chw.type = "iframe";
 			_chw.domain = "'.$this -> host.'";
-			_chw.data = "'.$this -> getEncryptedWidgetData().'";
+			_chw.data = "'.$this -> getEncryptedData().'";
 			(function() {
 			var ch = document.createElement("script"); ch.type = "text/javascript"; ch.async = true;
 			ch.src = "//'.($this -> host).'/v1/widget/script.js";
@@ -120,6 +120,6 @@ class Challenger{
 	}
 
 	public function getWidgetUrl(){
-		return '//' . $this -> host . '/widget?data=' . urlencode($this -> getEncryptedWidgetData());
+		return '//' . $this -> host . '/widget?data=' . urlencode($this -> getEncryptedData());
 	}
 }
