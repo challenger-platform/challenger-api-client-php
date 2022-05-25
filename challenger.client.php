@@ -13,7 +13,7 @@ class Challenger{
 
 		$this -> host = $url['host'] ?? $host;
 		$this -> port = $url['port'] ??
-			$port ??
+			$port ?:
 			((!empty($url['scheme']) and $url['scheme'] == 'http') ? 80 : $this -> port);
 	}
 
