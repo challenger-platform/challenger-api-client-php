@@ -73,7 +73,14 @@ class Challenger{
 	}
 
 	public function trackEvent($event){
-		return file_get_contents($this -> getEventTrackingUrl($event));
+		$url = $this -> getEventTrackingUrl($event);
+
+		// file_get_contents() work unstable with SSL. So switch to CURL in this case
+		if($this -> port == 443){
+			return $this -> httpsRequest($url);
+		}else{
+			return file_get_contents($url);
+		}
 	}
 
 	private function getClientDeletionUrl(){
@@ -85,7 +92,14 @@ class Challenger{
 	}
 
 	public function deleteClient(){
-		return file_get_contents($this -> getClientDeletionUrl());
+		$url = $this -> getClientDeletionUrl();
+
+		// file_get_contents() work unstable with SSL. So switch to CURL in this case
+		if($this -> port == 443){
+			return $this -> httpsRequest($url);
+		}else{
+			return file_get_contents($url);
+		}
 	}
 
 	public function getEncryptedData(){
@@ -121,5 +135,23 @@ class Challenger{
 
 	public function getWidgetUrl(){
 		return '//' . $this -> host . '/widget?data=' . urlencode($this -> getEncryptedData());
+	}
+
+	private function httpsRequest($url)
+	{
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_REFERER, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3000); // 3 sec.
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10000); // 10 sec.
+
+		$result = curl_exec($ch);
+		curl_close($ch);
+
+		return $result;
 	}
 }
