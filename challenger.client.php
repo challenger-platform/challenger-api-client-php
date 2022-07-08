@@ -1,12 +1,13 @@
 <?php
-
+// Copyright: Enga systems, UAB
 class Challenger{
 	var $host = null;
 	var $port = 443;
 	var $params = [];
 	var $key = null;
 	var $ownerId = 0;
-	var $clientId = 0;
+	var $clientId = '';
+	var $clientKey = '';
 
 	public function __construct($host, $port = false){
 		$url = parse_url($host); // Check if URL is provided instead of hostname
@@ -39,11 +40,15 @@ class Challenger{
 		$this -> clientId = $clientId;
 	}
 
+	public function setClientKey($key){
+		$this -> clientKey = $key;
+	}
+
 	public function addParam($name, $value){
 		$this -> params[$name] = $value;
 	}
 
-	private function encryptData($data = []){
+	private function encryptData($data){
 
 		// Generate an initialization vector
 		// This *MUST* be available for decryption as well
@@ -56,15 +61,17 @@ class Challenger{
 	}
 
 	private function getEventTrackingUrl($event){
-		// Owner call's should always be hashed be default. Owner Id is a salt itself
-		if($this -> ownerId){
-			$clientId = md5($this -> ownerId . ":" . $this -> clientId);
+		// Owner call's should always be hashed by default. Owner Id is a salt itself
+		// However if clientKey (already hashed string) is provided. We don't hash it again
+		// Also key is not hashed if it is not a call by the owner
+		if($this -> ownerId and !$this -> clientKey){
+			$this -> clientKey = md5($this -> ownerId . ':' . $this -> clientId);
 		}else{
-			$clientId = $this -> clientId;
+			$this -> clientKey = $this -> clientId ?: $this -> clientKey;
 		}
 
 		$encryptedData = $this -> encryptData(json_encode([
-			'client_id' => $clientId,
+			'client_id' => $this -> clientKey,
 			'params' => $this -> params,
 			'event' => $event,
 		]));
