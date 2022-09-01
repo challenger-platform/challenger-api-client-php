@@ -64,8 +64,6 @@ In examples below:
    - `birthday` (in format 0000-00-00)
  - `value1`, `value2`,  ... - values of optional parameters.
 
-## Web version
-
 Using the PHP helper functions provided with Challenger to get widget HTML is as easy as that:
 
 ```php
@@ -80,6 +78,7 @@ $chall -> addParam('surname', 'Smith'); // Optional
 $chall -> addParam('{param1}', '{value1}'); // Optional
 $chall -> addParam('{param2}', '{value2}'); // Optional
 
+// Option A: Get a widget HTML generated on server
 $resp = $chall -> getWidgetHtml();
 
 if($resp === false){
@@ -88,32 +87,7 @@ if($resp === false){
     echo $resp; // Draw HTML snippet
 }
 
-// ...
-
-// For locally drawn widgets `getEncryptedData()` method could be used instead of `getWidgetHtml()`. Please refer:
-// https://github.com/challenger-platform/challenger-widget#get-apiwidgetauthenticateuser for more information
-$encrypted_data = $chall -> getEncryptedData();
-
-```
-
-N.B. This function is not accessible for coalitional partners.
-
-## Mobile app version
-
-This code creates an encrypted URL for mobile ready widget. It should be passed to mobile app and opened in WebView.
-
-```php
-include_once 'challenger.client.php';
-
-$chall = new Challenger('{your.challenger.domain}');
-$chall -> setClientId({client_id});
-$chall -> setKey('{secret_key}');
-$chall -> addParam('expiration', '0000-00-00 00:00:00'); // Required
-$chall -> addParam('{param1}', '{value1}'); // Optional
-$chall -> addParam('{param2}', '{value2}'); // Optional
-$chall -> addParam('mobile', true); // Pass it to get mobile version of the widget
-
-// Option A: Display a widget generated on server 
+// Option B: Get an URL of the widget generated on server 
 $widgetUrl = $chall -> getWidgetUrl();
 
 if($widgetUrl === false){
@@ -122,10 +96,11 @@ if($widgetUrl === false){
     echo $widgetUrl; // Return widget URL
 }
 
-// Option B: Draw widget on client-side and use encrypted token to authorize the user
+// Option C: Get and encrypted token to authorize the user and draw the widget on client-side
 // For locally drawn widgets `getEncryptedData()` method could be used instead of `getWidgetHtml()`. Please refer:
 // https://github.com/challenger-platform/challenger-widget#get-apiwidgetauthenticateuser for more information
 $encrypted_data = $chall -> getEncryptedData();
+
 ```
 
 N.B. This function is not accessible for coalitional partners.
