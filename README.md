@@ -113,6 +113,7 @@ $chall -> addParam('{param1}', '{value1}'); // Optional
 $chall -> addParam('{param2}', '{value2}'); // Optional
 $chall -> addParam('mobile', true); // Pass it to get mobile version of the widget
 
+// Option A: Display a widget generated on server 
 $widgetUrl = $chall -> getWidgetUrl();
 
 if($widgetUrl === false){
@@ -121,8 +122,7 @@ if($widgetUrl === false){
     echo $widgetUrl; // Return widget URL
 }
 
-// ...
-
+// Option B: Draw widget on client-side and use encrypted token to authorize the user
 // For locally drawn widgets `getEncryptedData()` method could be used instead of `getWidgetHtml()`. Please refer:
 // https://github.com/challenger-platform/challenger-widget#get-apiwidgetauthenticateuser for more information
 $encrypted_data = $chall -> getEncryptedData();
