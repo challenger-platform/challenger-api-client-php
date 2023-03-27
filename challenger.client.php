@@ -1,5 +1,6 @@
 <?php
 // Copyright: Enga systems, UAB
+
 class Challenger{
 	var $host = null;
 	var $port = 443;
@@ -60,6 +61,15 @@ class Challenger{
 		return openssl_encrypt($data, 'aes-256-cbc', $this -> key, 0, $iv) . ':' . base64_encode($iv);
 	}
 
+	private function getHostUrl(){
+		if($this->port == 443){
+			return 'https://' . $this->host;
+		}else{
+			return 'http://' . $this->host
+				. (($this->port != 443 and $this->port != 80) ? ':' . $this->port : '');
+		}
+	}
+
 	private function getEventTrackingUrl($event){
 		// Owner call's should always be hashed by default. Owner Id is a salt itself
 		// However if clientKey (already hashed string) is provided. We don't hash it again
@@ -70,24 +80,17 @@ class Challenger{
 			$this -> clientKey = $this -> clientId ?: $this -> clientKey;
 		}
 
-		$encryptedData = $this -> encryptData(json_encode([
+		$encryptedData = urlencode($this -> encryptData(json_encode([
 			'client_id' => $this -> clientKey,
 			'params' => $this -> params,
 			'event' => $event,
-		]));
+		])));
 
-		return ($this -> port == '443' ? 'https' : 'http') . '://' . $this -> host . '/api/v1/trackEvent?owner_id='.$this -> ownerId.'&data=' . urlencode($encryptedData);
+		return $this->getHostUrl() . "/api/v1/trackEvent?owner_id={$this->ownerId}&data=$encryptedData";
 	}
 
 	public function trackEvent($event){
-		$url = $this -> getEventTrackingUrl($event);
-
-		// file_get_contents() work unstable with SSL. So switch to CURL in this case
-		if($this -> port == 443){
-			return $this -> httpsRequest($url);
-		}else{
-			return file_get_contents($url);
-		}
+		return $this -> httpsRequest($this -> getEventTrackingUrl($event));
 	}
 
 	private function getClientDeletionUrl(){
@@ -95,18 +98,11 @@ class Challenger{
 			'client_id' => $this -> clientId,
 		]));
 
-		return ($this -> port == '443' ? 'https' : 'http') . '://' . $this -> host . '/api/v1/deleteClient?data=' . urlencode($encryptedData);
+		return $this->getHostUrl() . '/api/v1/deleteClient?data=' . urlencode($encryptedData);
 	}
 
 	public function deleteClient(){
-		$url = $this -> getClientDeletionUrl();
-
-		// file_get_contents() work unstable with SSL. So switch to CURL in this case
-		if($this -> port == 443){
-			return $this -> httpsRequest($url);
-		}else{
-			return file_get_contents($url);
-		}
+		return $this -> httpsRequest($this -> getClientDeletionUrl());
 	}
 
 	public function getEncryptedData(){
@@ -141,7 +137,7 @@ class Challenger{
 	}
 
 	public function getWidgetUrl(){
-		return '//' . $this -> host . '/widget?data=' . urlencode($this -> getEncryptedData());
+		return "//{$this->host}/widget?data=" . urlencode($this -> getEncryptedData());
 	}
 
 	private function httpsRequest($url)
