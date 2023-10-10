@@ -61,6 +61,7 @@ In examples below:
    - `surname`
    - `email`
    - `phone`
+   - `lang` (2-digit language code. I.e. "en", "es", "lt", "hr")
    - `birthday` (in format 0000-00-00)
  - `value1`, `value2`,  ... - values of optional parameters.
 
@@ -75,6 +76,7 @@ $chall -> setKey('{secret_key}');
 $chall -> addParam('expiration', '0000-00-00 00:00:00'); // Required
 $chall -> addParam('name', 'John'); // Optional
 $chall -> addParam('surname', 'Smith'); // Optional
+$chall -> addParam('lang', 'en'); // Optional.
 $chall -> addParam('{param1}', '{value1}'); // Optional
 $chall -> addParam('{param2}', '{value2}'); // Optional
 
