@@ -143,14 +143,18 @@ class Challenger{
 	private function httpsRequest($url)
 	{
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($ch, CURLOPT_HEADER, false);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3000); // 3 sec.
-		curl_setopt($ch, CURLOPT_TIMEOUT, 10000); // 10 sec.
 
+		// Set cURL settings
+		curl_setopt_array($ch, [
+			CURLOPT_NOPROXY => getenv('NO_PROXY'),
+			CURLOPT_HEADER => false,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_URL => $url,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_CONNECTTIMEOUT => 3000, // 3 sec.
+			CURLOPT_TIMEOUT => 10000 // 10 sec.
+		]);
+		
 		$result = curl_exec($ch);
 		curl_close($ch);
 
