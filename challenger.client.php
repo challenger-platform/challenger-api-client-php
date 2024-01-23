@@ -151,8 +151,8 @@ class Challenger{
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_URL => $url,
 			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_CONNECTTIMEOUT => 3000, // 3 sec.
-			CURLOPT_TIMEOUT => 10000 // 10 sec.
+			CURLOPT_CONNECTTIMEOUT => 3, // 3 sec.
+			CURLOPT_TIMEOUT => 10 // 10 sec.
 		]);
 		
 		$result = curl_exec($ch);
