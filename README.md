@@ -1,9 +1,9 @@
-Challenger platform API class and examples for PHP
+Challenger platform API class and examples for PHP (version 2)
 ===
 
 In example below:
 
- - `your.challenger.domain` - is the domain of your Challenger implementation (alternatively could be provided as URL)
+ - `http://your.challenger.domain` - is the URL of your Challenger implementation
  - `secret_key` - a unique key provided by Challenger to encrypt data exchange
  - `owner_id` - a unique identifier provided by Challenger. Normally used to identify coalition partners. (optional)
  - `client_id` - the identifier of the client performing action
@@ -15,17 +15,24 @@ In example below:
 This code prepares a call to Challenger server on event happened to a client identified by {client_id}:
 
 ```php
-include_once 'challenger.client.php';
+include_once 'challenger.client-v2.php';
 
-$chall = new Challenger('{your.challenger.domain}');
-$chall -> setKey('{secret_key}');
-$chall -> setOwnerId({owner_id}); // Optional
-$chall -> setClientId({client_id});
-$chall -> addParam('multiple', '{multiple}'); // Optional
+$chall = new Challenger('{http://your.challenger.domain}', '{secret_key}');
+$chall -> setOwnerId('{owner_id}'); // Optional
 
-if($chall -> trackEvent({event_id}) === false){
-    // Error happened. Check if servers are not down.
+// addEvent() can be called multiple times to send information in bulk
+$chall -> addEvent('{client_id}', '{event_id}', [
+	'multiple' => '{multiple}',
+	'context' => '{context}'
+]);
+
+try{
+	$res = $chall -> send();
+} catch (Exception $e){
+	// Error happened. Check if servers are not down.
+	// ...
 }
+
 ```
 
 N.B. If ownerId is used, clientId is one way hashed internally to increase protection of personal client data.
@@ -35,15 +42,15 @@ N.B. If ownerId is used, clientId is one way hashed internally to increase prote
 This code prepares a call to Challenger to delete particular client {client_id}:
 
 ```php
-include_once 'challenger.client.php';
+include_once 'challenger.client-v2.php';
 
-$chall = new Challenger('{your.challenger.domain}');
-$chall -> setKey('{secret_key}');
-$chall -> setClientId({client_id});
-$resp = $chall -> deleteClient();
+$chall = new Challenger('{http://your.challenger.domain}', '{secret_key}');
 
-if($chall -> trackEvent({event_id}) === false){
-    // Error happened. Check if servers are not down.
+try{
+	$res = $chall -> deleteClient('{client_id}');
+} catch (Exception $e){
+	// Error happened. Check if servers are not down.
+	// ...
 }
 ```
 
@@ -68,40 +75,53 @@ In examples below:
 Using the PHP helper functions provided with Challenger to get widget HTML is as easy as that:
 
 ```php
-include_once 'challenger.client.php';
+include_once 'challenger.client-v2.php';
 
-$chall = new Challenger('{your.challenger.domain}');
-$chall -> setClientId({client_id});
-$chall -> setKey('{secret_key}');
-$chall -> addParam('expiration', '0000-00-00 00:00:00'); // Required
-$chall -> addParam('name', 'John'); // Optional
-$chall -> addParam('surname', 'Smith'); // Optional
-$chall -> addParam('lang', 'en'); // Optional.
-$chall -> addParam('{param1}', '{value1}'); // Optional
-$chall -> addParam('{param2}', '{value2}'); // Optional
+$chall = new Challenger('{http://your.challenger.domain}', '{secret_key}');
 
 // Option A: Get a widget HTML generated on server
-$resp = $chall -> getWidgetHtml();
-
-if($resp === false){
-    // Error happened. Check if servers are not down.
-}else{
-    echo $resp; // Draw HTML snippet
+try{
+	$html = $chall -> getWidgetHtml('{client_id}', '{expiration}', [
+		'name' => 'John', // Optional
+		'surname' => 'Smith', // Optional
+		'lang' => 'en', // Optional.
+		'{param1}' => '{value1}', // Optional
+		'{param2}' => '{value2}', // Optional
+	]);
+} catch (Exception $e){
+	// Error happened. Check if servers are not down.
+	// ...
 }
 
-// Option B: Get an URL of the widget generated on server 
-$widgetUrl = $chall -> getWidgetUrl();
-
-if($widgetUrl === false){
-    // Error happened. Check if servers are not down.
-}else{
-    echo $widgetUrl; // Return widget URL
+// Option B: Get a widget URL generated on server
+try{
+	$url = $chall -> getWidgetUrl('{client_id}', '{expiration}', [
+		'name' => 'John', // Optional
+		'surname' => 'Smith', // Optional
+		'lang' => 'en', // Optional.
+		'{param1}' => '{value1}', // Optional
+		'{param2}' => '{value2}', // Optional
+	]);
+} catch (Exception $e){
+	// Error happened. Check if servers are not down.
+	// ...
 }
 
 // Option C: Get and encrypted token to authorize the user and draw the widget on client-side
 // For locally drawn widgets `getEncryptedData()` method could be used instead of `getWidgetHtml()`. Please refer:
 // https://github.com/challenger-platform/challenger-widget#get-apiwidgetauthenticateuser for more information
-$encrypted_data = $chall -> getEncryptedData();
+try{
+	$encrypted_data = $chall -> getEncryptedData('{client_id}', '{expiration}', [
+		'name' => 'John', // Optional
+		'surname' => 'Smith', // Optional
+		'lang' => 'en', // Optional.
+		'{param1}' => '{value1}', // Optional
+		'{param2}' => '{value2}', // Optional
+	]);
+} catch (Exception $e){
+	// Error happened. Check if servers are not down.
+	// ...
+}
 
 ```
 

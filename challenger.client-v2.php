@@ -4,10 +4,8 @@
 class Challenger{
   var $url = null;
 	var $host = null;
-	var $params = [];
 	var $key = null;
 	var $ownerId = 0;
-	var $clientId = '';
 
   var $eventsList = [];
   var $lastResponse = false;
@@ -24,14 +22,6 @@ class Challenger{
 
 	public function setOwnerId($ownerId){
 		$this -> ownerId = $ownerId;
-	}
-
-	public function setClientId($clientId){
-		$this -> clientId = $clientId;
-	}
-
-	public function addParam($name, $value){
-		$this -> params[$name] = $value;
 	}
 
 	private function encryptData($data){
@@ -100,68 +90,42 @@ class Challenger{
     ]);
 	}
 
-	public function getEncryptedData(){
+	public function getEncryptedData($clientId, $expiration, $params = []){
+		$params['expiration'] = $expiration;
+
 		return $this -> encryptData(json_encode([
-			'client_id' => $this -> clientId,
-			'params' => $this -> params,
+			'client_id' => $clientId,
+			'params' => $params,
 		]));
 	}
 
-	public function getWidgetScript(){
+	public function getWidgetScript($clientId, $expiration, $params = []){
 		return "
 			_chw = typeof _chw == 'undefined' ? {} : _chw;
 			_chw.type = 'iframe';
 			_chw.domain = '{$this->host}';
-			_chw.data = '" . $this->getEncryptedData() . "';
+			_chw.data = '" . $this->getEncryptedData($clientId, $expiration, $params) . "';
 			(function() {
-				var ch = document.createElement('script'); ch.type = 'text/javascript'; ch.async = true;
-				ch.src = '{$this->url}/v2/widget/script.js';
+				var ch = document.createElement('script');
+				ch.type = 'text/javascript';
+				ch.async = true;
+				ch.src = '{$this->url}/v1/widget/script.js';
 				var s = document.getElementsByTagName('script')[0];
 				s.parentNode.insertBefore(ch, s);
 			})();
 		";
 	}
 
-	public function getWidgetHtml(){
+	public function getWidgetHtml($clientId, $expiration, $params = []){
 		return '
 		<div id="_chWidget"></div>
 		<script type="text/javascript">
-			'.$this -> getWidgetScript().'
+			'.$this -> getWidgetScript($clientId, $expiration, $params).'
 		</script>';
 	}
 
-	public function getWidgetUrl(){
-		return "{$this->url}/widget?data=" . urlencode($this -> getEncryptedData());
-	}
-
-	private function httpsRequest($url)
-	{
-		$ch = curl_init();
-
-		// Set cURL settings
-		curl_setopt_array($ch, [
-			CURLOPT_NOPROXY => getenv('NO_PROXY'),
-			CURLOPT_HEADER => false,
-			CURLOPT_FOLLOWLOCATION => false,
-			CURLOPT_URL => $url,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_CONNECTTIMEOUT => 3, // 3 sec.
-			CURLOPT_TIMEOUT => 10 // 10 sec.
-		]);
-
-		$this -> lastResponse = curl_exec($ch);
-
-    // Get HTTP response code
-    $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-		curl_close($ch);
-
-    // Throw exception if server fails
-    if($http_status < 200 or $http_status >= 300){
-      throw new Exception("ApiResponseError");
-    }
-
-		return $this -> lastResponse;
+	public function getWidgetUrl($clientId, $expiration, $params = []){
+		return "{$this->url}/widget?data=" . urlencode($this -> getEncryptedData($clientId, $expiration, $params));
 	}
 
 	private function httpsRequestPost($url, $postArray)
