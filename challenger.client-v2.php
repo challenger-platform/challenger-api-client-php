@@ -2,18 +2,18 @@
 // Copyright: Enga systems, UAB
 
 class Challenger{
-  var $url = null;
+	var $url = null;
 	var $host = null;
 	var $key = null;
 	var $ownerId = 0;
 
-  var $eventsList = [];
-  var $lastResponse = false;
+	var $eventsList = [];
+	var $lastResponse = false;
 
 	public function __construct($url, $key){
-    $this -> url = $url;
-    $this -> key = $key;
-    $this -> host = parse_url($url)['host'];
+		$this -> url = $url;
+		$this -> key = $key;
+		$this -> host = parse_url($url)['host'];
 	}
 
 	private function generateVector(){
@@ -36,7 +36,7 @@ class Challenger{
 		return openssl_encrypt($data, 'aes-256-cbc', $this -> key, 0, $iv) . ':' . base64_encode($iv);
 	}
 
-  // Adds an event to the batch by client id
+	// Adds an event to the batch by client id
 	function addEvent($clientId, $event, $params = []){
 		// Owner call's should always be hashed by default. Owner Id is a salt itself
 		// However if clientKey (already hashed string) is provided. We don't hash it again
@@ -47,47 +47,47 @@ class Challenger{
 			$clientKey = $clientId;
 		}
 
-    // Add events to the list for the following encryption
-    return $this -> eventsList[] = [
+		// Add events to the list for the following encryption
+		return $this -> eventsList[] = [
 			'client_id' => $clientKey,
 			'params' => $params,
 			'event' => $event,
 		];
 	}
 
-  // Adds an event to the batch by client key
+	// Adds an event to the batch by client key
 	function addEventHashed($clientKey, $event, $params = []){
 		// Owner call's should always be hashed by default. Owner Id is a salt itself
 		// However if clientKey (already hashed string) is provided. We don't hash it again
 		// Also key is not hashed if it is not a call by the owner
 
-    // Add events to the list for the following encryption
-    return $this -> eventsList[] = [
+		// Add events to the list for the following encryption
+		return $this -> eventsList[] = [
 			'client_id' => $clientKey,
 			'params' => $params,
 			'event' => $event,
 		];
 	}
 
-  // Send the list of events to the server
+	// Send the list of events to the server
 	public function send(){
 		$res = $this -> httpsRequestPost("{$this->url}/api/v2/trackEvent", [
 			'owner_id' => $this -> ownerId,
 			'data' => $this -> encryptData(json_encode($this -> eventsList))
 		]);
 
-    // Flush existing event list
-    $this -> eventsList = [];
+		// Flush existing event list
+		$this -> eventsList = [];
 
-    return $res;
+		return $res;
 	}
 
 	public function deleteClient($clientId){
 		return $this -> httpsRequestPost($this->url . "/api/v2/deleteClient", [
-      'data' => $this -> encryptData(json_encode([
-  			'client_id' => $clientId,
-  		]))
-    ]);
+			'data' => $this -> encryptData(json_encode([
+				'client_id' => $clientId,
+			]))
+		]);
 	}
 
 	public function getEncryptedData($clientId, $expiration, $params = []){
@@ -142,25 +142,33 @@ class Challenger{
 			CURLOPT_POST => 1,
 			CURLOPT_POSTFIELDS => http_build_query($postArray),
 			CURLOPT_CONNECTTIMEOUT => 3, // 3 sec.
-			CURLOPT_TIMEOUT => 10 // 10 sec.
+			CURLOPT_TIMEOUT => 60 // 60 sec.
 		]);
 
 		$this -> lastResponse = curl_exec($ch);
 
-    // Get HTTP response code
-    $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		// Get HTTP response code
+		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$last_error = curl_error($ch);
+		$last_error_id = curl_errno($ch);
 
 		curl_close($ch);
 
-    // Throw exception if server fails
-    if($http_status < 200 or $http_status >= 300){
-      throw new Exception("ApiResponseError");
-    }
+		if($last_error_id){
+			$this -> lastResponse = $last_error;
+
+			throw new Exception("ApiCallError");
+		}
+
+		// Throw exception if server fails
+		if($http_status < 200 or $http_status >= 300){
+			throw new Exception("ApiResponseError");
+		}
 
 		return $this -> lastResponse;
 	}
 
-  public function getLastResponse(){
-    return $this -> lastResponse;
-  }
+	public function getLastResponse(){
+		return $this -> lastResponse;
+	}
 }
