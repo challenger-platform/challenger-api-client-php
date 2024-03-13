@@ -155,9 +155,7 @@ class Challenger{
 		curl_close($ch);
 
 		if($last_error_id){
-			$this -> lastResponse = $last_error;
-
-			throw new Exception("ApiCallError");
+			throw new Exception("ApiCallError: $last_error");
 		}
 
 		// Throw exception if server fails
