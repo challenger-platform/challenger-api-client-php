@@ -149,13 +149,13 @@ class Challenger{
 
 		// Get HTTP response code
 		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		$last_error = curl_error($ch);
 		$last_error_id = curl_errno($ch);
+		$this -> lastResponse = curl_error($ch);
 
 		curl_close($ch);
 
 		if($last_error_id){
-			throw new Exception("ApiCallError: $last_error");
+			throw new Exception("ApiCallError");
 		}
 
 		// Throw exception if server fails
