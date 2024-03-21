@@ -9,6 +9,7 @@ class Challenger{
 
 	var $eventsList = [];
 	var $lastResponse = false;
+	var $lastError = false;
 
 	public function __construct($url, $key){
 		$this -> url = $url;
@@ -150,7 +151,7 @@ class Challenger{
 		// Get HTTP response code
 		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		$last_error_id = curl_errno($ch);
-		$this -> lastResponse = curl_error($ch);
+		$this -> lastError = curl_error($ch);
 
 		curl_close($ch);
 
@@ -168,5 +169,9 @@ class Challenger{
 
 	public function getLastResponse(){
 		return $this -> lastResponse;
+	}
+
+	public function getLastError(){
+		return $this -> lastError;
 	}
 }
