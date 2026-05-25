@@ -126,7 +126,7 @@ class Challenger{
 	}
 
 	public function getWidgetUrl($clientId, $expiration, $params = []){
-		return "{$this->url}/widget?data=" . urlencode($this -> getEncryptedData($clientId, $expiration, $params));
+		return "{$this->url}/widget/v2?data=" . urlencode($this -> getEncryptedData($clientId, $expiration, $params));
 	}
 
 	private function httpsRequestPost($url, $postArray)
